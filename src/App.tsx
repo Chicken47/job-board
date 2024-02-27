@@ -18,11 +18,7 @@ import AddNewModal from "./components/AddNewModal";
 
 const App = () => {
   const saved: Array<Job> = [
-    { id: 12345, companyName: "Google", title: "Frontend" },
-    { id: 11345, companyName: "Google", title: "Frontend" },
-    { id: 54321, companyName: "Microsoft", title: "Backend" },
-    { id: 87655, companyName: "PhonePe", title: "CTO" },
-    { id: 87654, companyName: "NPCI", title: "SWET" },
+    { id: 12345, companyName: "Facebook", title: "CEO, bitch" },
   ];
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
