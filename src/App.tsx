@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Job, NewJob } from "./models";
 import Column from "./components/Columns";
 import AddNewModal from "./components/AddNewModal";
-import { Button, Modal } from "antd";
 import JobModal from "./components/JobModal";
 
 // add job functionality (done)
