@@ -1,27 +1,27 @@
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import Header from "./components/Header";
 import { useState } from "react";
-import { Job } from "./models";
-import {
-  AppliedColumn,
-  InterviewColumn,
-  OfferColumn,
-  RejectedColumn,
-  SavedColumn,
-} from "./components/Columns";
+import { Job, NewJob } from "./models";
+import Column from "./components/Columns";
 import AddNewModal from "./components/AddNewModal";
+import { Button, Modal } from "antd";
+import JobModal from "./components/JobModal";
 
 // add job functionality (done)
+// open job with data in modal (done)
+// add all types (done)
+// make code better (done)
 // zustand
-// add all types
-// make code better
 
-const App = () => {
+const App: React.FC = () => {
   const saved: Array<Job> = [
-    { id: 12345, companyName: "Facebook", title: "CEO, bitch" },
+    { id: 12345, companyName: "Facebook", title: "The Mighty Zucc" },
   ];
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [openJob, setOpenJob] = useState<boolean>(false);
+
+  const [selectedJob, setSelectedJob] = useState<NewJob | null>(null);
 
   const [savedJobs, setSavedJobs] = useState<Array<Job>>(saved);
   const [appliedJobs, setAppliedJobs] = useState<Array<Job>>([]);
@@ -29,11 +29,40 @@ const App = () => {
   const [offerJobs, setOfferJobs] = useState<Array<Job>>([]);
   const [rejectedJobs, setRejectedJobs] = useState<Array<Job>>([]);
 
-  const [newJob, setNewJob] = useState({
+  const [newJob, setNewJob] = useState<NewJob>({
     title: "",
     companyName: "",
     notes: "",
   });
+
+  const columns: { columnName: string; droppableId: string; jobList: Job[] }[] =
+    [
+      {
+        columnName: "Saved Jobs",
+        droppableId: "saved_jobs",
+        jobList: savedJobs,
+      },
+      {
+        columnName: "Applied Jobs",
+        droppableId: "applied_jobs",
+        jobList: appliedJobs,
+      },
+      {
+        columnName: "Interview Jobs",
+        droppableId: "interview_jobs",
+        jobList: interviewJobs,
+      },
+      {
+        columnName: "Job Offered",
+        droppableId: "offer_jobs",
+        jobList: offerJobs,
+      },
+      {
+        columnName: "Rejected Jobs",
+        droppableId: "rejected_jobs",
+        jobList: rejectedJobs,
+      },
+    ];
 
   const onDragEnd = (result: DropResult) => {
     console.log(result);
@@ -99,7 +128,7 @@ const App = () => {
 
   const addJob = () => {
     console.log("addJob reached");
-    const newObj = {
+    const newObj: Job = {
       id: Date.now(),
       companyName: newJob.companyName,
       title: newJob.title,
@@ -109,17 +138,34 @@ const App = () => {
     setIsModalOpen(false);
   };
 
+  const openModal = (job: NewJob) => {
+    setSelectedJob(job);
+    setOpenJob(true);
+  };
+
+  const saveChanges = (updatedJobDetails: NewJob) => {
+    // Handle saving changes here
+    console.log("Updated job details:", updatedJobDetails);
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="h-screen max-w-screen">
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="flex flex-col h-full overflow-hidden selection:bg-green-400">
           <Header setIsModalOpen={setIsModalOpen} />
           <div className="flex w-auto h-full px-5 py-10 overflow-x-auto bg-blue-50">
-            <SavedColumn jobList={savedJobs} />
-            <AppliedColumn jobList={appliedJobs} />
-            <InterviewColumn jobList={interviewJobs} />
-            <OfferColumn jobList={offerJobs} />
-            <RejectedColumn jobList={rejectedJobs} />
+            {columns.map((column) => {
+              return (
+                <Column
+                  key={column.droppableId}
+                  columnName={column.columnName}
+                  droppableId={column.droppableId}
+                  jobList={column.jobList}
+                  openModal={openModal}
+                />
+              );
+            })}
           </div>
         </div>
       </DragDropContext>
@@ -129,6 +175,12 @@ const App = () => {
         newJob={newJob}
         setIsModalOpen={setIsModalOpen}
         setNewJob={setNewJob}
+      />
+      <JobModal
+        visible={openJob}
+        setVisible={setOpenJob}
+        jobDetails={selectedJob}
+        onSave={saveChanges}
       />
     </div>
   );

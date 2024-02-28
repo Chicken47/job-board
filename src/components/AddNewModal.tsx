@@ -1,19 +1,37 @@
+import React, { useState, ChangeEvent } from "react";
 import { Button, Modal } from "antd";
+import { AddNewModalProps, NewJob } from "../models";
 
-const AddNewModal = ({
+const AddNewModal: React.FC<AddNewModalProps> = ({
   isModalOpen,
   setIsModalOpen,
   setNewJob,
   newJob,
   addJob,
-}: any) => {
+}: AddNewModalProps) => {
+  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
+
+  const handleInputChange = (field: keyof NewJob, value: string) => {
+    setNewJob({
+      ...newJob,
+      [field]: value,
+    });
+    setIsButtonDisabled(!newJob.title || !newJob.companyName);
+  };
+
   return (
     <Modal
       open={isModalOpen}
       title="Add a job"
       onCancel={() => setIsModalOpen(false)}
       footer={[
-        <Button onClick={addJob} type="default" className="">
+        <Button
+          key="addJobBtn"
+          onClick={addJob}
+          type="default"
+          className=""
+          disabled={isButtonDisabled}
+        >
           Add Job
         </Button>,
       ]}
@@ -24,11 +42,8 @@ const AddNewModal = ({
           <input
             className="px-2 py-1 border rounded "
             value={newJob?.title}
-            onChange={(e) =>
-              setNewJob({
-                ...newJob,
-                title: e.target.value,
-              })
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              handleInputChange("title", e.target.value)
             }
           />
         </div>
@@ -37,24 +52,20 @@ const AddNewModal = ({
           <input
             className="px-2 py-1 border rounded "
             value={newJob?.companyName}
-            onChange={(e) =>
-              setNewJob({
-                ...newJob,
-                companyName: e.target.value,
-              })
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              handleInputChange("companyName", e.target.value)
             }
           />
         </div>
         <div className="flex flex-col gap-1">
-          <span>Notes</span>
+          <span>
+            Notes <i className="text-xs text-gray-400">(optional)</i>
+          </span>
           <textarea
             className="px-2 py-1 border rounded "
             value={newJob?.notes}
-            onChange={(e) =>
-              setNewJob({
-                ...newJob,
-                notes: e.target.value,
-              })
+            onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+              setNewJob({ ...newJob, notes: e.target.value })
             }
           />
         </div>
